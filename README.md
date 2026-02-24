@@ -1,16 +1,13 @@
 # CareerFlow – Job Application Tracker
-A production-ready full-stack Flask application deployed on Render using Gunicorn and WSGI.
 
-Built with Flask, authentication, analytics dashboard, and multi-user job tracking.
+Production-ready full-stack Flask application deployed on Render using Gunicorn (WSGI) with user authentication, analytics dashboard, and multi-user job tracking.
 
 ## 🚀 Live Demo
 https://careerflow-job-tracker.onrender.com
 
-### Demo Login
-(Demo aacount contains sample job data for preview purposes.)
+### Demo Access
 
-Email: demo@careerflow.com  
-Password: demo123
+You can register for a new account to explore the application features. All user data is isolated per account.
 
 ## Features
 - User Authentication (Flask-Login)
