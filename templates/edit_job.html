@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="container">
+    <h2>Edit Job</h2>
+
+    <form method="POST">
+        <label>Company</label>
+        <input type="text" name="company" value="{{ job[1] }}" required>
+
+        <label>Position</label>
+        <input type="text" name="position" value="{{ job[2] }}" required>
+
+        <label>Status</label>
+        <select name="status">
+            <option value="Applied" {% if job[3] == "Applied" %}selected{% endif %}>Applied</option>
+            <option value="Interview" {% if job[3] == "Interview" %}selected{% endif %}>Interview</option>
+            <option value="Rejected" {% if job[3] == "Rejected" %}selected{% endif %}>Rejected</option>
+        </select>
+
+        <button type="submit">Update Job</button>
+    </form>
+</div>
+
+{% endblock %}
