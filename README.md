@@ -1,6 +1,6 @@
 # CareerFlow – Job Application Tracker
 
-A full-stack Flask web application that allows users to track job applications with analytics.
+Built with Flask, authentication, analytics dashboard, and multi-user job tracking.
 
 ## Features
 - User Authentication (Flask-Login)
@@ -27,3 +27,17 @@ A full-stack Flask web application that allows users to track job applications w
    pip install flask flask-login werkzeug
 4. Run the app  
    python app.py
+
+## Screenshots
+
+### Dashboard
+![Dashboard](screenshots/Dashboard.png)
+
+### Add Job
+![Add Job](screenshots/add-job.png)
+
+### Login
+![Login](screenshots/login.png)
+
+### Analytics Chart
+![Chart](screenshots/chart.png)
