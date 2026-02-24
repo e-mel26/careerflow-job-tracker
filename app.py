@@ -10,11 +10,16 @@ from flask_sqlalchemy import SQLAlchemy
 
 app = Flask(__name__)
 
-# Secret key from environment (Render)
+# =========================
+# CONFIG
+# =========================
+
+# Secret key (Render should provide this)
 app.secret_key = os.environ.get("SECRET_KEY", "dev-only-secret-key")
 
-# Database URL from Render environment variables
+# Database URL from Render
 database_url = os.environ.get("DATABASE_URL")
+
 if database_url and database_url.startswith("postgres://"):
     database_url = database_url.replace("postgres://", "postgresql://", 1)
 
@@ -31,8 +36,10 @@ login_manager.login_view = "login"
 # =========================
 # MODELS
 # =========================
+
 class User(db.Model, UserMixin):
     __tablename__ = "users"
+
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(120), unique=True, nullable=False)
     password = db.Column(db.String(255), nullable=False)
@@ -42,6 +49,7 @@ class User(db.Model, UserMixin):
 
 class Job(db.Model):
     __tablename__ = "jobs"
+
     id = db.Column(db.Integer, primary_key=True)
     company = db.Column(db.String(255), nullable=False)
     position = db.Column(db.String(255), nullable=False)
@@ -55,14 +63,34 @@ def load_user(user_id):
     return User.query.get(int(user_id))
 
 
-# Create tables at startup
+# =========================
+# CREATE TABLES + DEMO USER
+# =========================
+
 with app.app_context():
     db.create_all()
+
+    demo_username = os.environ.get("DEMO_USERNAME")
+    demo_password = os.environ.get("DEMO_PASSWORD")
+
+    if demo_username and demo_password:
+        existing = User.query.filter_by(username=demo_username).first()
+
+        hashed = generate_password_hash(demo_password)
+
+        if not existing:
+            db.session.add(User(username=demo_username, password=hashed))
+            db.session.commit()
+        else:
+            # Always update password to match environment variable
+            existing.password = hashed
+            db.session.commit()
 
 
 # =========================
 # AUTH ROUTES
 # =========================
+
 @app.route("/register", methods=["GET", "POST"])
 def register():
     if request.method == "POST":
@@ -109,10 +137,10 @@ def logout():
 # =========================
 # MAIN ROUTES
 # =========================
+
 @app.route("/")
 @login_required
 def home():
-    # sort order
     jobs = (
         Job.query.filter_by(user_id=current_user.id)
         .order_by(
@@ -149,7 +177,12 @@ def add_job():
         position = request.form["position"].strip()
         status = request.form["status"]
 
-        job = Job(company=company, position=position, status=status, user_id=current_user.id)
+        job = Job(
+            company=company,
+            position=position,
+            status=status,
+            user_id=current_user.id
+        )
         db.session.add(job)
         db.session.commit()
 
