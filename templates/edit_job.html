@@ -1,26 +1,37 @@
 {% extends "base.html" %}
-
 {% block content %}
 
 <div class="container">
-    <h2>Edit Job</h2>
+  <h2>Edit Job</h2>
 
-    <form method="POST">
-        <label>Company</label>
-        <input type="text" name="company" value="{{ job[1] }}" required>
+  <form method="POST" action="{{ url_for('edit_job', job_id=job.id) }}">
+    <label for="company">Company</label>
+    <input
+      type="text"
+      id="company"
+      name="company"
+      value="{{ job.company }}"
+      required
+    />
 
-        <label>Position</label>
-        <input type="text" name="position" value="{{ job[2] }}" required>
+    <label for="position">Position</label>
+    <input
+      type="text"
+      id="position"
+      name="position"
+      value="{{ job.position }}"
+      required
+    />
 
-        <label>Status</label>
-        <select name="status">
-            <option value="Applied" {% if job[3] == "Applied" %}selected{% endif %}>Applied</option>
-            <option value="Interview" {% if job[3] == "Interview" %}selected{% endif %}>Interview</option>
-            <option value="Rejected" {% if job[3] == "Rejected" %}selected{% endif %}>Rejected</option>
-        </select>
+    <label for="status">Status</label>
+    <select id="status" name="status" required>
+      <option value="Applied" {% if job.status == "Applied" %}selected{% endif %}>Applied</option>
+      <option value="Interview" {% if job.status == "Interview" %}selected{% endif %}>Interview</option>
+      <option value="Rejected" {% if job.status == "Rejected" %}selected{% endif %}>Rejected</option>
+    </select>
 
-        <button type="submit">Update Job</button>
-    </form>
+    <button type="submit">Update Job</button>
+  </form>
 </div>
 
 {% endblock %}

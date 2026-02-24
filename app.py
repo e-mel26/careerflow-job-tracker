@@ -6,24 +6,19 @@ from flask_login import (
     logout_user, current_user
 )
 from werkzeug.security import generate_password_hash, check_password_hash
-
 from flask_sqlalchemy import SQLAlchemy
-
 
 app = Flask(__name__)
 
-# ✅ Secret key MUST come from environment on Render
-# (we'll set SECRET_KEY in Render)
+# Secret key from environment (Render)
 app.secret_key = os.environ.get("SECRET_KEY", "dev-only-secret-key")
 
-# ✅ Database URL from Render environment variables
-# Render Postgres sometimes gives postgres:// which SQLAlchemy wants as postgresql://
+# Database URL from Render environment variables
 database_url = os.environ.get("DATABASE_URL")
-
 if database_url and database_url.startswith("postgres://"):
     database_url = database_url.replace("postgres://", "postgresql://", 1)
 
-# Fallback to SQLite only for local dev (optional)
+# Fallback to SQLite locally
 app.config["SQLALCHEMY_DATABASE_URI"] = database_url or "sqlite:///jobs.db"
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 
@@ -32,7 +27,6 @@ db = SQLAlchemy(app)
 login_manager = LoginManager()
 login_manager.init_app(app)
 login_manager.login_view = "login"
-
 
 # =========================
 # MODELS
@@ -61,7 +55,7 @@ def load_user(user_id):
     return User.query.get(int(user_id))
 
 
-# ✅ Create tables (runs on deploy/start)
+# Create tables at startup
 with app.app_context():
     db.create_all()
 
@@ -75,7 +69,6 @@ def register():
         username = request.form["username"].strip()
         password = generate_password_hash(request.form["password"])
 
-        # check if user exists
         existing = User.query.filter_by(username=username).first()
         if existing:
             return "Username already exists"
@@ -119,13 +112,13 @@ def logout():
 @app.route("/")
 @login_required
 def home():
-    # Jobs for current user (sorted by status order)
+    # sort order
     jobs = (
         Job.query.filter_by(user_id=current_user.id)
         .order_by(
             db.case(
-                (Job.status == "Interview", 1),
-                (Job.status == "Applied", 2),
+                (Job.status == "Applied", 1),
+                (Job.status == "Interview", 2),
                 (Job.status == "Rejected", 3),
                 else_=4,
             )
@@ -156,12 +149,7 @@ def add_job():
         position = request.form["position"].strip()
         status = request.form["status"]
 
-        job = Job(
-            company=company,
-            position=position,
-            status=status,
-            user_id=current_user.id
-        )
+        job = Job(company=company, position=position, status=status, user_id=current_user.id)
         db.session.add(job)
         db.session.commit()
 
